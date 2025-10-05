@@ -326,3 +326,4 @@
         body: "{{ email_body }}"
         subtype: html
         charset: utf8
+      delegate_to: localhost
