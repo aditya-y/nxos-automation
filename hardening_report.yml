@@ -318,7 +318,7 @@
     - name: Send Email with attachment
       ansible.builtin.mail:
         host: "{{ smtp_host }}"
-        port: 25
+        port: 587
         to: "{{ send_to }}"
         from: "{{ sender }}"
         subject: "{{ mail_subj }}"
