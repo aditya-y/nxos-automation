@@ -316,7 +316,7 @@
         summary_data: "{{ compliance_summary }}"
 
     - name: Send Email with attachment
-      mail:
+      ansible.builtin.mail:
         host: "{{ smtp_host }}"
         port: 25
         to: "{{ send_to }}"
