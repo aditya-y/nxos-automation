@@ -1,0 +1,15 @@
+---
+- name: NX-OS Security Hardening Orchestrator
+  hosts: all
+  gather_facts: no
+  vars:
+    report_timestamp: "{{ now(fmt='%Y%m%d_%H%M%S') }}"
+
+  pre_tasks:
+    - name: Install required Ansible collections/roles from requirements.yml
+      ansible.builtin.command: ansible-galaxy install -r requirements.yml
+      delegate_to: localhost
+      run_once: true
+
+  roles:
+    - hardening

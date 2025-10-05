@@ -1,0 +1,8 @@
+logging logfile messages 6 size 51200
+{% for server in syslog_servers %}
+logging server {{ server.ip }} {{ server.level }} port {{ server.port }}
+{% endfor %}
+logging source-interface {{ source_interface }}
+logging timestamp milliseconds
+no logging monitor
+no logging console

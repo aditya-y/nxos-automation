@@ -1,0 +1,18 @@
+radius-server key 7 {{ radius_key }}
+{% for server in radius_servers %}
+radius-server host {{ server }} authentication accounting
+{% endfor %}
+!
+aaa group server radius HC_NPS_Server
+{% for server in radius_servers %}
+    server {{ server }}
+{% endfor %}
+!
+crypto key generate rsa mod 2048
+
+###### added local as the first authentication before radius ##########
+aaa authentication login default local
+#aaa authentication login default local group HC_NPS_Server
+aaa accounting default group HC_NPS_Server
+aaa authentication login error-enable
+ip radius source-interface {{ source_interface }}

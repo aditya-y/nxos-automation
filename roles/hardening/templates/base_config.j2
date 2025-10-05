@@ -1,0 +1,36 @@
+hostname {{ target_hostname }}
+
+policy-map type network-qos jumbo
+  class type network-qos class-default
+    mtu 9216
+
+cfs eth distribute
+feature lacp
+feature vpc
+feature lldp
+clock timezone SGT 8 0
+
+role name priv-7
+  rule 2 permit command show run
+  rule 1 permit read
+
+username admin password {{ admin_password }} role network-admin
+username netadmin password {{ netadmin_password }} role network-admin
+
+system qos
+  service-policy type network-qos jumbo
+copp profile strict
+
+ssh login-gracetime 90
+password strength-check
+
+
+#no feature ssh
+#no ssh key rsa
+#ssh key rsa 2048
+#feature ssh
+
+no ip domain-lookup
+ip domain-name hcloud.healthgrp.com.sg
+
+#icam monitor scale

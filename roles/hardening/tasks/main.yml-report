@@ -1,0 +1,13 @@
+---
+#- name: Generate Hardening Report
+#  template:
+#    src: hardening_report.j2
+#    dest: "/tmp/{{ ansible_hostname }}_hardening.txt"
+#  delegate_to: localhost
+
+
+- name: Generate Hardening Report
+  template:
+    src: hardening_report.j2
+    dest: "/tmp/{{ ansible_hostname }}_hardening{{ report_timestamp }}.txt"
+  delegate_to: localhost

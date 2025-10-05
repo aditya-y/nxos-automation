@@ -1,0 +1,96 @@
+================================================================================
+                    NX-OS SECURITY HARDENING REPORT
+================================================================================
+Generated: "Expect Variable"
+Device: {{ target_hostname }}
+Datacenter:  "datacenter_name"
+Location: {{ location_name }}
+Source Interface: {{ source_interface }}
+Device Type: "device_type "
+
+================================================================================
+CONFIGURATION APPLIED
+================================================================================
+
+1. BASE CONFIGURATION
+   - Hostname: {{ target_hostname }}
+   - Network QoS: Jumbo frames (9216 MTU)
+   - Features enabled: LACP, VPC, LLDP
+   - CoPP Profile: Strict
+   - SSH Security: Login grace time 90s, RSA 2048-bit keys
+   - Domain: hcloud.healthgrp.com.sg
+
+2. AAA CONFIGURATION
+   - RADIUS Servers:
+{% for server in radius_servers %}
+     * {{ server }}
+{% endfor %}
+   - AAA Group: HC_NPS_Server
+   - Authentication: RADIUS with local fallback
+   - Accounting: Enabled
+
+3. ACCESS CONTROL LISTS
+   - VTY Access ACL: {{ vty_access_ips | length }} IPs authorized
+   - eG Poll ACL: {{ eg_poll_ips | length }} IPs configured
+   - eG Trap ACL: {{ eg_trap_ips | length }} IPs configured
+   - ELK ACLs: Configured
+   - SNOW ACLs: Configured
+   - JIRA CMDB ACL: {{ jira_cmdb_ip }}
+   - CSPC ACL: {{ cspc_acl_ip }}
+
+4. SNMP CONFIGURATION
+   - Location: {{ location_name }}
+   - Common Users: egtrapsuser, elktrapsuser, JiraCMDBv3_User
+   - Device-specific Users: Based on {{ device_type }} type
+   - Trap Hosts: {{ snmp_trap_hosts | length }} configured
+   - Global Enforce Privacy: Enabled
+
+5. NTP CONFIGURATION
+   - NTP Servers:
+{% for server in ntp_servers %}
+     * {{ server.ip }} (Key: {{ server.key }})
+{% endfor %}
+   - Authentication: Enabled
+   - Source Interface: {{ source_interface }}
+
+6. VTY CONFIGURATION
+   - Console timeout: 5 minutes
+   - VTY timeout: 5 minutes
+   - Session limit: 5
+   - Access restricted by ACL
+
+7. LOGGING CONFIGURATION
+   - Syslog Servers:
+{% for server in syslog_servers %}
+     * {{ server.ip }}:{{ server.port }} (Level {{ server.level }})
+{% endfor %}
+   - Log file: messages level 6, size 51200
+   - Timestamps: Milliseconds
+   - Console/Monitor logging: Disabled
+
+================================================================================
+COMPLIANCE STATUS
+================================================================================
+[✓] Password strength checking enabled
+[✓] SSH security hardened
+[✓] Domain configuration applied
+[✓] Banner configured
+[✓] CoPP profile strict enabled
+[✓] AAA authentication configured
+[✓] RADIUS servers configured
+[✓] ACLs applied
+[✓] SNMP v3 with encryption
+[✓] NTP with authentication
+[✓] Logging configured
+[✓] VTY restrictions applied
+
+================================================================================
+POST-EXECUTION NOTES
+================================================================================
+1. Configuration saved: {{ save_result.changed | default('Yes') }}
+2. Backup created: {{ backup_result.backup_path | default('N/A') }}
+3. Rollback available: Yes
+
+================================================================================
+END OF REPORT
+================================================================================

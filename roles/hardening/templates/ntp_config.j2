@@ -1,0 +1,8 @@
+{% for server in ntp_servers %}
+ntp server {{ server.ip }} use-vrf default key {{ server.key }}
+{% endfor %}
+ntp source-interface {{ source_interface }}
+ntp authenticate
+ntp authentication-key 2 md5 {{ ntp_auth_key }} 7
+ntp trusted-key 2
+ntp access-group peer NTP_ACL

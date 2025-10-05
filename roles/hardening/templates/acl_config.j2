@@ -1,0 +1,56 @@
+{% for ip in eg_poll_ips %}
+{% if loop.first %}
+ip access-list ACL_FOR_eG_Poll
+{% endif %}
+  {{ loop.index0 * 10 + 10 }} permit ip {{ ip }}/32 any
+{% endfor %}
+!
+{% for ip in eg_trap_ips %}
+{% if loop.first %}
+ip access-list ACL_FOR_eG_Trap
+{% endif %}
+  {{ loop.index0 * 10 + 10 }} permit ip {{ ip }}/32 any
+{% endfor %}
+!
+{% for ip in elk_poll_ips %}
+{% if loop.first %}
+ip access-list ELK_SNMP_Poll_ACL
+{% endif %}
+  {{ loop.index0 * 10 + 10 }} permit ip {{ ip }}/32 any
+{% endfor %}
+!
+{% for ip in elk_trap_ips %}
+{% if loop.first %}
+ip access-list ELK_SNMP_Trap_ACL
+{% endif %}
+  {{ loop.index0 * 10 + 10 }} permit ip {{ ip }}/32 any
+{% endfor %}
+!
+ip access-list Jira_CMDB
+  10 permit ip {{ jira_cmdb_ip }}/32 any
+!
+{% for ip in ntp_acl_ips %}
+{% if loop.first %}
+ip access-list NTP_ACL
+{% endif %}
+  {{ loop.index0 * 10 + 10 }} permit ip {{ ip }}/32 any
+{% endfor %}
+!
+ip access-list CSPC_ACL
+  10 permit ip {{ cspc_acl_ip }}/32 any
+!
+{% for ip in snow_poll_ips %}
+{% if loop.first %}
+ip access-list SNOW_SNMP_Poll_ACL
+{% endif %}
+  {{ loop.index0 * 10 + 10 }} permit ip {{ ip }}/32 any
+{% endfor %}
+!
+ip access-list VTY-access
+{% for ip in vty_access_ips %}
+  permit tcp {{ ip }}/32 any eq 22
+{% endfor %}
+  deny ip any any log
+!
+ip access-list VTY-deny-access
+  100 deny ip any any log

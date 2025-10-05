@@ -1,0 +1,59 @@
+---
+
+egtrapsuser_auth: "eG@5yn@PXeAuth@2024"
+egtrapsuser_priv: "eG@5yn@PXeAuth@2024"
+
+elktrapsuser_auth: "eLK@!HiSAuth@2023"
+elktrapsuser_priv: "eLK@!HiSAuth@2023"
+
+jiracmdb_auth: "AP@JiraCMDB@51hi@#A%$#*&!"
+jiracmdb_priv: "PP@JiraCMDB@51hi@#A%$#*&!"
+
+egmgt_auth: "AP_MGT@eGP0B@5hi"
+egmgt_priv: "PP_MGT@eGP0B@5hi"
+
+elkmgt_auth: "AP_MGT@eLKP0B@5hi@#A%$#*&!"
+elkmgt_priv: "PP_MGT@eLK0B@5hi@#A%$#*&!"
+
+snowmgt_auth: "AP_MGT@sNOWP0B@5hi"
+snowmgt_priv: "PP_MGT@sNOWP0B@5hi"
+
+egtsz_auth: "AP_TSZ@eGP0B@5hi@#A%$#*&!"
+egtsz_priv: "PP_TSZ@eGP0B@5hi@#A%$#*&!"
+
+elktsz_auth: "AP_TSZ@eLKP0B@5hi"
+elktsz_priv: "PP_TSZ@eLK0B@5hi"
+
+snowtsz_auth: "AP_TSZ@sNOWP0B@5hi"
+snowtsz_priv: "PP_TSZ@sNOWP0B@5hi"
+
+egbkp_auth: "AP_BKP@eGP0B@5hi@#A%$#*&!"
+egbkp_priv: "PP_BKP@eGP0B@5hi@#A%$#*&!"
+
+elkbkp_auth: "AP_BKP@eLKP0B@5hi"
+elkbkp_priv: "AP_BKP@eLKP0B@5hi"
+
+snowbkp_auth: "AP_BKP@sNOWP0B@5hi"
+snowbkp_priv: "PP_BKP@sNOWP0B@5hi"
+
+cspc_auth: "CSPCAuth@IHiS2024!"
+cspc_priv: "CSPCPriv@IHiS2024!"
+
+admin_password: "Cisco@123"
+netadmin_password: "Cisco@123"
+
+radius_key: "KYPSHSN3jy3w"
+
+ntp_auth_key: "!O3hmr3IF1m3A3c"
+
+
+
+# # Local User Credentials
+# vault_admin_password: "Cisco@123"
+# vault_netadmin_password: "Cisco@123"
+
+# # RADIUS Configuration
+# vault_radius_key: "KYPSHSN3jy3w"
+
+# # NTP Authentication
+# vault_ntp_auth_key: "!O3hmr3IF1m3A3c"

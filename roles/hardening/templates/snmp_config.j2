@@ -1,0 +1,45 @@
+{# SNMP Server Configuration Template - Parameterized Version #}
+snmp-server contact {{ snmp_contact | default('IHIS NETWORK SERVICES') }}
+snmp-server location {{ location_name }}
+snmp-server source-interface traps {{ source_interface }}
+snmp-server source-interface informs {{ source_interface }}
+snmp-server globalEnforcePriv
+!
+{# Common SNMP Users #}
+{% for user in common_snmp_users %}
+snmp-server user {{ user.name }} auth {{ user.auth_protocol | default(snmp_auth_protocol | default('sha')) }} {{ user.auth_key }} priv {{ user.priv_protocol | default(snmp_priv_protocol | default('aes-128')) }} {{ user.priv_key }}
+{% endfor %}
+!
+{# Device Type Specific SNMP Users #}
+{% if device_type is defined and device_type in device_specific_users %}
+{% for user in device_specific_users[device_type] %}
+snmp-server user {{ user.name }} auth {{ user.auth_protocol | default(snmp_auth_protocol | default('sha')) }} {{ user.auth_key }} priv {{ user.priv_protocol | default(snmp_priv_protocol | default('aes-128')) }} {{ user.priv_key }}
+{% endfor %}
+{% endif %}
+!
+{# Additional Users #}
+{% for user in additional_snmp_users | default([]) %}
+{% if user.auth_key is defined and user.priv_key is defined %}
+snmp-server user {{ user.name }} auth {{ user.auth_protocol | default(snmp_auth_protocol | default('sha')) }} {{ user.auth_key }} priv {{ user.priv_protocol | default(snmp_priv_protocol | default('aes-128')) }} {{ user.priv_key }}
+{% endif %}
+{% endfor %}
+!
+{# ACL Associations #}
+{% for user_acl in snmp_user_acls %}
+snmp-server user {{ user_acl.user }} use-ipv4acl {{ user_acl.acl }}
+{% endfor %}
+!
+{# Trap Hosts #}
+{% for host in snmp_trap_hosts %}
+snmp-server host {{ host.ip }} traps version {{ host.version | default('3') }} {{ host.security_level | default('priv') }} {{ host.user }} 
+{% endfor %}
+!
+{# RMON Events #}
+{% for event in rmon_events | default(default_rmon_events) %}
+rmon event {{ event.id }} description {{ event.description }} owner {{ event.owner }}
+{% endfor %}
+!
+{# SNMP Traps #}
+{% for trap in snmp_enabled_traps | default(default_snmp_traps) %}
+snmp-server enable traps {{ trap }}
+{% endfor %}

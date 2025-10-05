@@ -1,0 +1,299 @@
+---
+- name: Extract NX-OS security hardening configuration based on templates
+  hosts: all
+  gather_facts: no
+  tasks:
+    
+    # 
+    - name: Gather facts (including date/time)
+      ansible.builtin.setup:
+        filter: "ansible_date_time"
+    - name: Check password strength and SSH hardening
+      cisco.nxos.nxos_command:
+        commands:
+          - show run | include "password strength-check"
+          - show run | include "ssh login-gracetime"
+          - show run | include "ssh key rsa"
+          - show run | section "ssh"
+      register: base_security_config
+
+    - name: Check banner configuration
+      cisco.nxos.nxos_command:
+        commands:
+          - show banner motd
+      register: banner_status
+
+    - name: Check CoPP profile configuration
+      cisco.nxos.nxos_command:
+        commands:
+          - show copp status
+          - show run | include "copp profile"
+      register: copp_status
+
+    - name: Check custom role configuration
+      cisco.nxos.nxos_command:
+        commands:
+          - show run | section "role name priv-7"
+          - show role name priv-7
+      register: custom_role_config
+      ignore_errors: yes
+
+    - name: Check domain lookup and domain name settings
+      cisco.nxos.nxos_command:
+        commands:
+          - show run | include "ip domain"
+      register: domain_config
+
+    # AAA Configuration Hardening Checks
+    - name: Check RADIUS configuration
+      cisco.nxos.nxos_command:
+        commands:
+          - show run | section "radius-server"
+          - show run | section "aaa group server radius"
+          - show radius-server
+      register: radius_config
+
+    - name: Check AAA authentication and accounting
+      cisco.nxos.nxos_command:
+        commands:
+          - show run | section "aaa authentication"
+          - show run | section "aaa accounting"
+          - show run | include "aaa authentication login error-enable"
+      register: aaa_config
+
+    - name: Check radius source interface
+      cisco.nxos.nxos_command:
+        commands:
+          - show run | include "ip radius source-interface"
+      register: radius_source_if
+
+    # VTY/Console Configuration Checks
+    - name: Check line console and VTY hardening
+      cisco.nxos.nxos_command:
+        commands:
+          - show run | section "line console"
+          - show run | section "line vty"
+          - show run | include "exec-timeout"
+          - show run | include "session-limit"
+      register: line_config
+
+    - name: Check VTY access-class configuration
+      cisco.nxos.nxos_command:
+        commands:
+          - show run | include "access-class"
+      register: vty_acl_config
+
+    # Logging Configuration Checks
+    - name: Check logging configuration
+      cisco.nxos.nxos_command:
+        commands:
+          - show run | section logging
+          - show logging server
+          - show run | include "logging source-interface"
+          - show run | include "logging timestamp"
+      register: logging_config
+
+    - name: Check disabled logging channels
+      cisco.nxos.nxos_command:
+        commands:
+          - show run | include "no logging monitor"
+          - show run | include "no logging console"
+      register: logging_disabled
+
+    # NTP Configuration Checks
+    - name: Check NTP security configuration
+      cisco.nxos.nxos_command:
+        commands:
+          - show run ntp
+          - show ntp authentication-status
+          - show ntp trusted-keys
+          - show run | include "ntp access-group"
+      register: ntp_config
+
+    - name: Check NTP source interface and authentication
+      cisco.nxos.nxos_command:
+        commands:
+          - show run | include "ntp source-interface"
+          - show run | include "ntp authenticate"
+          - show run | include "ntp authentication-key"
+      register: ntp_security
+
+    # SNMP Configuration Checks
+    - name: Check SNMP security configuration
+      cisco.nxos.nxos_command:
+        commands:
+          - show run | section snmp
+          - show snmp user
+          - show run | include "snmp-server globalEnforcePriv"
+      register: snmp_config
+
+    - name: Check SNMP source interface and contact info
+      cisco.nxos.nxos_command:
+        commands:
+          - show run | include "snmp-server source-interface"
+          - show run | include "snmp-server contact"
+          - show run | include "snmp-server location"
+      register: snmp_metadata
+
+    - name: Check SNMP user ACL associations
+      cisco.nxos.nxos_command:
+        commands:
+          - show run | include "snmp-server user"
+          - show run | include "use-ipv4acl"
+      register: snmp_user_acls
+
+    - name: Check SNMP trap hosts configuration
+      cisco.nxos.nxos_command:
+        commands:
+          - show run | include "snmp-server host"
+          - show snmp host
+      register: snmp_trap_hosts
+
+    - name: Check RMON configuration
+      cisco.nxos.nxos_command:
+        commands:
+          - show run | include "rmon event"
+      register: rmon_config
+
+    # ACL Configuration Checks
+    - name: Check monitoring ACLs (eG, ELK, SNOW)
+      cisco.nxos.nxos_command:
+        commands:
+          - show run | section "ip access-list ACL_FOR_eG_Poll"
+          - show run | section "ip access-list ACL_FOR_eG_Trap"
+          - show run | section "ip access-list ELK_SNMP_Poll_ACL"
+          - show run | section "ip access-list ELK_SNMP_Trap_ACL"
+          - show run | section "ip access-list SNOW_SNMP_Poll_ACL"
+      register: monitoring_acls
+
+    - name: Check infrastructure ACLs (NTP, CSPC, Jira)
+      cisco.nxos.nxos_command:
+        commands:
+          - show run | section "ip access-list NTP_ACL"
+          - show run | section "ip access-list CSPC_ACL"
+          - show run | section "ip access-list Jira_CMDB"
+      register: infrastructure_acls
+
+    - name: Check VTY access control lists
+      cisco.nxos.nxos_command:
+        commands:
+          - show run | section "ip access-list VTY-access"
+          - show run | section "ip access-list VTY-deny-access"
+          - show access-lists VTY-access
+          - show access-lists VTY-deny-access
+      register: vty_acls
+
+    # Additional Security Checks
+    - name: Check RSA key strength
+      cisco.nxos.nxos_command:
+        commands:
+          - show crypto key mypubkey rsa
+      register: rsa_key_info
+
+    - name: Check disabled features for security
+      cisco.nxos.nxos_command:
+        commands:
+          - show feature | include enabled
+      register: enabled_features
+
+    # Generate comprehensive hardening report
+    - name: Compile hardening compliance report
+      set_fact:
+        hardening_compliance:
+          hostname: "{{ inventory_hostname }}"
+          timestamp: "{{ ansible_date_time.iso8601 }}"
+          base_security:
+            password_strength_enabled: "{{ 'password strength-check' in base_security_config.stdout[0] }}"
+            ssh_login_gracetime: "{{ base_security_config.stdout[1] }}"
+            ssh_key_configured: "{{ 'ssh key rsa' in base_security_config.stdout[2] }}"
+            copp_profile: "{{ copp_status.stdout[1] }}"
+            banner_configured: "{{ banner_status.stdout[0] | length > 50 }}"
+            custom_role_defined: "{{ custom_role_config.stdout[0] | length > 0 }}"
+            domain_lookup_disabled: "{{ 'no ip domain-lookup' in domain_config.stdout[0] }}"
+          aaa_security:
+            radius_servers_configured: "{{ radius_config.stdout[0] }}"
+            aaa_group_configured: "{{ radius_config.stdout[1] }}"
+            local_auth_first: "{{ 'aaa authentication login default local' in aaa_config.stdout[0] }}"
+            accounting_enabled: "{{ 'aaa accounting default' in aaa_config.stdout[1] }}"
+            error_enable_configured: "{{ aaa_config.stdout[2] }}"
+            radius_source_interface: "{{ radius_source_if.stdout[0] }}"
+          line_security:
+            console_timeout: "{{ line_config.stdout[0] }}"
+            vty_timeout: "{{ line_config.stdout[1] }}"
+            vty_session_limit: "{{ 'session-limit' in line_config.stdout[1] }}"
+            vty_acl_inbound: "{{ 'access-class VTY-access in' in vty_acl_config.stdout[0] }}"
+            vty_acl_outbound: "{{ 'access-class VTY-deny-access out' in vty_acl_config.stdout[0] }}"
+          logging_security:
+            logging_servers: "{{ logging_config.stdout[1] }}"
+            source_interface_configured: "{{ logging_config.stdout[2] }}"
+            timestamp_milliseconds: "{{ 'logging timestamp milliseconds' in logging_config.stdout[3] }}"
+            monitor_disabled: "{{ 'no logging monitor' in logging_disabled.stdout[0] }}"
+            console_disabled: "{{ 'no logging console' in logging_disabled.stdout[1] }}"
+          ntp_security:
+            ntp_authentication_enabled: "{{ 'ntp authenticate' in ntp_security.stdout[1] }}"
+            ntp_auth_key_configured: "{{ ntp_security.stdout[2] }}"
+            ntp_trusted_keys: "{{ ntp_config.stdout[2] }}"
+            ntp_acl_configured: "{{ 'ntp access-group peer NTP_ACL' in ntp_config.stdout[3] }}"
+            ntp_source_interface: "{{ ntp_security.stdout[0] }}"
+          snmp_security:
+            global_enforce_priv: "{{ 'snmp-server globalEnforcePriv' in snmp_config.stdout[2] }}"
+            snmp_users: "{{ snmp_config.stdout[1] }}"
+            source_interface_traps: "{{ snmp_metadata.stdout[0] }}"
+            contact_configured: "{{ snmp_metadata.stdout[1] }}"
+            location_configured: "{{ snmp_metadata.stdout[2] }}"
+            user_acl_associations: "{{ snmp_user_acls.stdout[1] }}"
+            trap_hosts: "{{ snmp_trap_hosts.stdout[0] }}"
+            rmon_events: "{{ rmon_config.stdout[0] }}"
+          acl_security:
+            monitoring_acls_configured:
+              eg_poll: "{{ monitoring_acls.stdout[0] | length > 0 }}"
+              eg_trap: "{{ monitoring_acls.stdout[1] | length > 0 }}"
+              elk_poll: "{{ monitoring_acls.stdout[2] | length > 0 }}"
+              elk_trap: "{{ monitoring_acls.stdout[3] | length > 0 }}"
+              snow_poll: "{{ monitoring_acls.stdout[4] | length > 0 }}"
+            infrastructure_acls_configured:
+              ntp_acl: "{{ infrastructure_acls.stdout[0] | length > 0 }}"
+              cspc_acl: "{{ infrastructure_acls.stdout[1] | length > 0 }}"
+              jira_cmdb: "{{ infrastructure_acls.stdout[2] | length > 0 }}"
+            vty_acls_configured:
+              vty_access_defined: "{{ vty_acls.stdout[0] | length > 0 }}"
+              vty_deny_defined: "{{ vty_acls.stdout[1] | length > 0 }}"
+          crypto_security:
+            rsa_key_info: "{{ rsa_key_info.stdout[0] }}"
+            rsa_2048_configured: "{{ '2048' in rsa_key_info.stdout[0] }}"
+          enabled_features: "{{ enabled_features.stdout[0] }}"
+      delegate_to: localhost
+      run_once: false
+
+    - name: Save individual device hardening report
+      copy:
+        content: "{{ hardening_compliance | to_nice_yaml }}"
+        dest: "/tmp//{{ inventory_hostname }}_hardening_compliance.yml"
+      delegate_to: localhost
+
+    - name: Generate hardening compliance summary table
+      set_fact:
+        compliance_summary:
+          hostname: "{{ inventory_hostname }}"
+          password_strength: "{{ 'PASS' if hardening_compliance.base_security.password_strength_enabled else 'FAIL' }}"
+          ssh_hardened: "{{ 'PASS' if hardening_compliance.base_security.ssh_key_configured else 'FAIL' }}"
+          copp_strict: "{{ 'PASS' if 'strict' in hardening_compliance.base_security.copp_profile else 'FAIL' }}"
+          banner_present: "{{ 'PASS' if hardening_compliance.base_security.banner_configured else 'FAIL' }}"
+          aaa_local_first: "{{ 'PASS' if hardening_compliance.aaa_security.local_auth_first else 'FAIL' }}"
+          exec_timeout: "{{ 'PASS' if 'exec-timeout 5' in hardening_compliance.line_security.console_timeout else 'FAIL' }}"
+          vty_acl_protected: "{{ 'PASS' if hardening_compliance.line_security.vty_acl_inbound else 'FAIL' }}"
+          logging_secured: "{{ 'PASS' if hardening_compliance.logging_security.source_interface_configured else 'FAIL' }}"
+          ntp_authenticated: "{{ 'PASS' if hardening_compliance.ntp_security.ntp_authentication_enabled else 'FAIL' }}"
+          snmp_enforce_priv: "{{ 'PASS' if hardening_compliance.snmp_security.global_enforce_priv else 'FAIL' }}"
+          monitoring_acls: "{{ 'PASS' if hardening_compliance.acl_security.monitoring_acls_configured.eg_poll else 'FAIL' }}"
+          rsa_2048: "{{ 'PASS' if hardening_compliance.crypto_security.rsa_2048_configured else 'FAIL' }}"
+      delegate_to: localhost
+
+    - name: Create HTML compliance report
+      template:
+        src: hardening_report.j2
+        dest: "/tmp//{{ inventory_hostname }}_hardening_report.html"
+      delegate_to: localhost
+      vars:
+        report_data: "{{ hardening_compliance }}"
+        summary_data: "{{ compliance_summary }}"

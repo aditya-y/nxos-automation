@@ -1,0 +1,73 @@
+---
+#- name: Generate Hardening Report
+#  template:
+#    src: hardening_report.j2
+#    dest: "/tmp/{{ ansible_hostname }}_hardening.txt"
+#  delegate_to: localhost
+
+- name: Apply Base Configuration
+  cisco.nxos.nxos_config:
+    src: "base_config.j2"
+  register: base_config_result
+
+- name: Apply Motd Configuration
+  cisco.nxos.nxos_banner:
+    banner: motd
+    text: "{{ lookup('template', 'banner_motd.j2') }}"
+    state: present
+  vars:
+    ansible_command_timeout: 120
+
+- name: Apply AAA Configuration
+  cisco.nxos.nxos_config:
+    src: "aaa_config.j2"
+  register: aaa_config_result
+
+- name: Apply ACL Configuration
+  cisco.nxos.nxos_config:
+    src: "acl_config.j2"
+  register: acl_config_result
+
+- name: Apply SNMP Configuration
+  cisco.nxos.nxos_config:
+    src: "snmp_config.j2"
+  register: snmp_config_result
+  no_log: true
+
+- name: Apply NTP Configuration
+  cisco.nxos.nxos_config:
+    src: "ntp_config.j2"
+  register: ntp_config_result
+
+- name: Apply VTY Configuration
+  cisco.nxos.nxos_config:
+    src: "vty_config.j2"
+  register: vty_config_result
+
+- name: Apply Logging Configuration
+  cisco.nxos.nxos_config:
+    src: "logging_config.j2"
+  register: logging_config_result
+
+- name: Save Configuration
+  cisco.nxos.nxos_config:
+    save_when: modified
+  register: save_result
+
+- name: Set Execution Summary
+  set_fact:
+    execution_summary:
+      base_config: "{{ 'Applied' if base_config_result.changed else 'No changes' }}"
+      aaa_config: "{{ 'Applied' if aaa_config_result.changed else 'No changes' }}"
+      acl_config: "{{ 'Applied' if acl_config_result.changed else 'No changes' }}"
+      snmp_config: "{{ 'Applied' if snmp_config_result.changed else 'No changes' }}"
+      ntp_config: "{{ 'Applied' if ntp_config_result.changed else 'No changes' }}"
+      vty_config: "{{ 'Applied' if vty_config_result.changed else 'No changes' }}"
+      logging_config: "{{ 'Applied' if logging_config_result.changed else 'No changes' }}"
+      config_saved: "{{ 'Yes' if save_result.changed else 'Already saved' }}"
+
+- name: Generate Hardening Report
+  template:
+    src: hardening_report.j2
+    dest: "/tmp/{{ ansible_hostname }}_hardening{{ report_timestamp }}.txt"
+  delegate_to: localhost
