@@ -269,13 +269,10 @@
       copy:
         content: "{{ hardening_compliance | to_nice_yaml }}"
         dest: "/tmp/{{ inventory_hostname }}_hardening_compliance.yml"
-<<<<<<< HEAD
       delegate_to: localhost
 
     - name: Save individual device hardening report
       shell:  "/tmp/{{ inventory_hostname }}_hardening_compliance.yml"
-=======
->>>>>>> refs/remotes/origin/main
       delegate_to: localhost
 
     - name: Generate hardening compliance summary table
