@@ -1,0 +1,35 @@
+all:
+  children:
+    FW:
+      hosts:
+        F-TGZ-HIS-FWL01:
+          ansible_host: 10.247.35.20
+        F-TGZ-HIS-FWL02:
+          ansible_host: 10.247.35.21
+        F-TGZ-HIS-FWL03:
+          ansible_host: 10.247.35.23
+        F-TGZ-HIS-FWL04:
+          ansible_host: 10.247.35.24
+        F-TGZ-HIS-FWL05:
+          ansible_host: 10.247.35.25
+        F-TGZ-HIS-FWL06:
+          ansible_host: 10.247.35.27
+        F-TGZ-HIS-FWL07:
+          ansible_host: 10.247.35.29
+        F-TGZ-HIS-FWL08:
+          ansible_host: 10.247.35.30
+        F-TGZ-HIS-FWL09:
+          ansible_host: 10.247.35.36
+        F-TGZ-HIS-FWL10:
+          ansible_host: 10.247.35.37
+        F-TGZ-HIS-FWL11:
+          ansible_host: 10.247.35.39
+        F-TGZ-HIS-FWL12:
+          ansible_host: 10.247.35.40
+
+    mgmt:
+      hosts:
+        F-TGZ-HIS-CKPMR01:
+          ansible_host: 10.247.35.41
+        A-TGZ-HIS-CKPMR01:
+          ansible_host: 10.247.3.41

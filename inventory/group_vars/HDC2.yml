@@ -1,0 +1,118 @@
+---
+# HDC2 Configuration - IHIS_FORT_DC
+datacenter_name: "IHIS_FORT_DC"
+location_name: "IHIS_FORT_DC"
+
+# RADIUS Servers (same as HDC1)
+radius_servers:
+  - 10.247.32.11
+  - 10.247.0.11
+
+# NTP Servers - HDC2 specific
+ntp_servers:
+  - { ip: 10.247.34.11, key: 2 }
+  - { ip: 10.247.34.12, key: 2 }
+
+# Syslog Servers - HDC2 specific
+syslog_servers:
+  - { ip: 10.247.32.145, port: 9002, level: 6 }
+  - { ip: 10.247.32.231, port: 9506, level: 6 }
+
+# eG Poll IPs - HDC2 specific
+eg_poll_ips:
+  - 10.247.54.56
+  - 10.247.54.54
+  - 10.247.54.47
+  - 10.247.54.48
+  - 10.247.54.49
+  - 10.247.54.50
+  - 10.247.54.51
+  - 10.247.54.52
+  - 10.247.54.53
+  - 10.247.54.55
+  - 10.247.54.57
+
+# eG Trap IPs - HDC2 specific
+eg_trap_ips:
+  - 10.247.54.54
+
+# ELK IPs - HDC2 specific
+elk_poll_ips:
+  - 10.245.51.39
+  - 10.245.51.40
+
+elk_trap_ips:
+  - 10.245.51.39
+  - 10.245.51.40
+
+# SNOW IPs (same as HDC1)
+snow_poll_ips:
+  - 10.244.48.48
+  - 10.244.48.49
+  - 10.245.48.63
+  - 10.245.48.64
+
+# Other IPs
+jira_cmdb_ip: "10.247.17.210"
+cspc_acl_ip: "10.247.218.10"  # Different from HDC1
+
+# NTP ACL IPs - HDC2 specific
+ntp_acl_ips:
+  - 10.247.34.11
+  - 10.247.34.12
+
+# VTY Access IPs (includes HDC2 specific entries)
+vty_access_ips:
+  - 10.247.22.20
+  - 10.247.22.21
+  - 10.247.22.22
+  - 10.247.22.23
+  - 10.247.22.24
+  - 10.247.54.20
+  - 10.247.54.21
+  - 10.247.54.22
+  - 10.247.54.23
+  - 10.247.54.24
+  - 10.247.22.62
+  - 10.247.22.60
+  - 10.247.22.39
+  - 10.247.54.62
+  - 10.247.54.60
+  - 10.247.54.39
+  - 10.247.22.40
+  - 10.247.22.41
+  - 10.247.22.42
+  - 10.247.22.43
+  - 10.247.54.40
+  - 10.247.54.41
+  - 10.247.54.42
+  - 10.247.54.43
+  - 10.245.17.63    # HDC2 specific
+  - 10.245.64.95    # HDC2 specific
+  - 10.247.0.88
+  - 10.245.148.251
+  - 10.247.22.90
+  - 10.247.54.90
+  - 10.247.22.100
+  - 10.247.54.100
+  - 10.247.22.135
+  - 10.247.209.10
+  - 10.247.218.10   # HDC2 specific
+  - 10.247.17.62
+  - 10.247.17.191
+  - 10.247.48.21
+  - 10.247.16.71
+  - 10.247.49.98
+  - 10.247.17.106
+  - 10.247.131.22
+  - 10.247.132.22
+
+# SNMP trap hosts - HDC2 specific
+snmp_trap_hosts:
+  - { ip: 10.247.54.56, user: egtrapsuser }
+  - { ip: 10.247.17.210, user: JiraCMDBv3_User }
+  - { ip: 10.247.54.54, user: egtrapsuser }
+  - { ip: 10.247.54.47, user: egtrapsuser }
+  - { ip: 10.247.218.10, user: CSPC_SNMPV3_USER }  # HDC2 IP
+  - { ip: 10.245.51.39, user: elktrapsuser }
+  - { ip: 10.245.51.40, user: elktrapsuser }

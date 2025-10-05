@@ -1,0 +1,96 @@
+---
+# SNMP Configuration
+source_interface: "mgmt0"
+snmp_contact: "IHIS NETWORK SERVICES"
+snmp_auth_protocol: "sha"
+snmp_priv_protocol: "aes-128"
+
+# Common SNMP Users
+common_snmp_users:
+  - name: "egtrapsuser"
+    auth_key: "{{ egtrapsuser_auth }}"
+    priv_key: "{{ egtrapsuser_priv }}"
+  - name: "elktrapsuser"
+    auth_key: "{{ elktrapsuser_auth }}"
+    priv_key: "{{ elktrapsuser_priv }}"
+  - name: "JiraCMDBv3_User"
+    auth_key: "{{ jiracmdb_auth }}"
+    priv_key: "{{ jiracmdb_priv }}"
+  - name: "CSPC_SNMPV3_USER"
+    auth_key: "{{ cspc_auth | default('') }}"
+    priv_key: "{{ cspc_priv | default('') }}"
+
+# Device-specific users
+device_specific_users:
+  MGT:
+    - name: "eGMGTv3PullResU"
+      auth_key: "{{ egmgt_auth }}"
+      priv_key: "{{ egmgt_priv }}"
+    - name: "eLKMGTv3PullResU"
+      auth_key: "{{ elkmgt_auth }}"
+      priv_key: "{{ elkmgt_priv }}"
+    - name: "sNOWMGTv3PullResU"
+      auth_key: "{{ snowmgt_auth }}"
+      priv_key: "{{ snowmgt_priv }}"
+  TSZ:
+    - name: "eGTSZv3PullResU"
+      auth_key: "{{ egtsz_auth }}"
+      priv_key: "{{ egtsz_priv }}"
+    - name: "eLKTSZv3PullResU"
+      auth_key: "{{ elktsz_auth }}"
+      priv_key: "{{ elktsz_priv }}"
+    - name: "sNOWTSZv3PullResU"
+      auth_key: "{{ snowtsz_auth }}"
+      priv_key: "{{ snowtsz_priv }}"
+  BKP:
+    - name: "eGBKPv3PullResU"
+      auth_key: "{{ egbkp_auth }}"
+      priv_key: "{{ egbkp_priv }}"
+    - name: "eLKBKPv3PullResU"
+      auth_key: "{{ elkbkp_auth }}"
+      priv_key: "{{ elkbkp_priv }}"
+    - name: "sNOWBKPv3PullResU"
+      auth_key: "{{ snowbkp_auth }}"
+      priv_key: "{{ snowbkp_priv }}"
+
+# Additional users with conditional inclusion
+additional_snmp_users:
+  - name: "CSPC_SNMPV3_USER"
+    auth_key: "{{ cspc_auth | default('') }}"
+    priv_key: "{{ cspc_priv | default('') }}"
+
+# ACL Mappings
+snmp_user_acls:
+  - user: "CSPC_SNMPV3_USER"
+    acl: "{{ cspc_acl_name | default('CSPC_ACL') }}"
+  - user: "JiraCMDBv3_User"
+    acl: "{{ jira_acl_name | default('Jira_CMDB') }}"
+  - user: "egtrapsuser"
+    acl: "{{ eg_trap_acl_name | default('ACL_FOR_eG_Trap') }}"
+  - user: "elktrapsuser"
+    acl: "{{ elk_trap_acl_name | default('ELK_SNMP_Trap_ACL') }}"
+
+# Default RMON Events
+default_rmon_events:
+  - id: 1
+    description: "FATAL(1)"
+    owner: "{{ rmon_owner | default('PMON@FATAL') }}"
+  - id: 2
+    description: "CRITICAL(2)"
+    owner: "{{ rmon_owner | default('PMON@CRITICAL') }}"
+  - id: 3
+    description: "ERROR(3)"
+    owner: "{{ rmon_owner | default('PMON@ERROR') }}"
+  - id: 4
+    description: "WARNING(4)"
+    owner: "{{ rmon_owner | default('PMON@WARNING') }}"
+  - id: 5
+    description: "INFORMATION(5)"
+    owner: "{{ rmon_owner | default('PMON@INFO') }}"
+
+# Default SNMP Traps
+default_snmp_traps:
+  - "sysmgr cseFailSwCoreNotifyExtended"
+  - "stpx inconsistency"
+  - "stpx root-inconsistency"
+  - "stpx loop-inconsistency"
