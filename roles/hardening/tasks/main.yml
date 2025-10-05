@@ -27,6 +27,7 @@
   cisco.nxos.nxos_config:
     src: "acl_config.j2"
   register: acl_config_result
+  ignore_errors: true
 
 - name: Apply SNMP Configuration
   cisco.nxos.nxos_config:
