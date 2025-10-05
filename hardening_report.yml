@@ -2,6 +2,19 @@
 - name: Extract NX-OS security hardening configuration based on templates
   hosts: all
   gather_facts: no
+  vars:
+    smtp_host: "fsmtp.hcloud.healthgrp.com.sg"
+    sender: "Mini-GreenField Automation (Synapxe) <postmaster@aditya.mailgun.org>"
+    send_to: 
+      - yadav.omprakash@ctc-g.com.sg
+      - yadavaditya.sg@gmail.com
+#      - pusing.michelle.carreon@synapxe.sg
+#      - galvez.jester.norman.domingo@synapxe.sg
+    mail_subj: "Hardening Report"
+    email_attach:
+      - /tmp/{{ inventory_hostname }}_hardening_report.html
+      - /tmp/{{ inventory_hostname }}_hardening_compliance.yml
+    email_body: "Hardening Report"
   tasks:
     
     # 
@@ -296,8 +309,20 @@
     - name: Create HTML compliance report
       template:
         src: hardening_report.j2
-        dest: "/tmp//{{ inventory_hostname }}_hardening_report.html"
+        dest: "/tmp/{{ inventory_hostname }}_hardening_report.html"
       delegate_to: localhost
       vars:
         report_data: "{{ hardening_compliance }}"
         summary_data: "{{ compliance_summary }}"
+
+    - name: Send Email with attachment
+      mail:
+        host: "{{ smtp_host }}"
+        port: 25
+        to: "{{ send_to }}"
+        from: "{{ sender }}"
+        subject: "{{ mail_subj }}"
+        attach: "{{email_attach}}"
+        body: "{{ email_body }}"
+        subtype: html
+        charset: utf8
