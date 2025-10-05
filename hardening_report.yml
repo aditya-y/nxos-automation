@@ -3,8 +3,8 @@
   hosts: all
   gather_facts: no
   vars:
-    smtp_host: "fsmtp.hcloud.healthgrp.com.sg"
-    sender: "Mini-GreenField Automation (Synapxe) <postmaster@aditya.mailgun.org>"
+    smtp_host: "smtp.mailgun.org"
+    sender: "NXOS Automation (Synapxe) <postmaster@aditya.mailgun.org>"
     send_to: 
       - yadav.omprakash@ctc-g.com.sg
       - yadavaditya.sg@gmail.com
