@@ -1,0 +1,113 @@
+---
+- name: Gather device facts
+  cisco.nxos.nxos_facts:
+    gather_subset:
+      - all
+  register: device_facts
+
+- name: Collect running configuration
+  cisco.nxos.nxos_command:
+    commands:
+      - show running-config
+  register: running_config
+
+- name: Check password strength settings
+  cisco.nxos.nxos_command:
+    commands:
+      - show running-config | include password
+  register: password_config
+
+- name: Check AAA configuration
+  cisco.nxos.nxos_command:
+    commands:
+      - show running-config aaa
+      - show aaa authentication
+      - show aaa authorization
+      - show aaa accounting
+  register: aaa_config
+
+- name: Check SSH configuration and status
+  cisco.nxos.nxos_command:
+    commands:
+      - show running-config | section ssh
+      - show ssh server
+      - show feature | include ssh
+      - show feature | include telnet
+  register: ssh_status
+
+- name: Check SNMP configuration
+  cisco.nxos.nxos_command:
+    commands:
+      - show running-config | section snmp
+      - show snmp user
+  register: snmp_config
+
+- name: Check logging configuration
+  cisco.nxos.nxos_command:
+    commands:
+      - show running-config | section logging
+      - show logging server
+  register: logging_config
+
+- name: Check ACL configurations
+  cisco.nxos.nxos_command:
+    commands:
+      - show ip access-lists
+      - show running-config | section access-list
+  register: acl_config
+
+- name: Check control plane policing
+  cisco.nxos.nxos_command:
+    commands:
+      - show copp status
+      - show policy-map interface control-plane
+  register: copp_status
+
+- name: Check user accounts and roles
+  cisco.nxos.nxos_command:
+    commands:
+      - show user-account
+      - show running-config | section username
+      - show role
+  register: user_accounts
+
+- name: Check VTY and console settings
+  cisco.nxos.nxos_command:
+    commands:
+      - show running-config | section line
+      - show run vshd
+  register: vty_config
+
+- name: Check NTP configuration
+  cisco.nxos.nxos_command:
+    commands:
+      - show running-config ntp
+      - show ntp peers
+  register: ntp_config
+
+- name: Check banner configuration
+  cisco.nxos.nxos_command:
+    commands:
+      - show banner motd
+      - show running-config | section banner
+  register: banner_config
+  ignore_errors: yes
+
+- name: Check disabled services
+  cisco.nxos.nxos_command:
+    commands:
+      - show feature | include disabled
+      - show cdp
+      - show lldp
+  register: disabled_services
+  ignore_errors: yes
+
+- name: Generate hardening report
+  delegate_to: localhost
+  template:
+    src: hardening_report.j2
+    dest: "./{{ inventory_hostname }}hardening_report{{ report_timestamp }}.html"
+  vars:
+    hostname: "{{ inventory_hostname }}"
+    device_info: "{{ device_facts }}"
+    timestamp: "{{ report_timestamp }}"

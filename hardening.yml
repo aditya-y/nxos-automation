@@ -5,11 +5,15 @@
   vars:
     report_timestamp: "{{ now(fmt='%Y%m%d_%H%M%S') }}"
 
-      #  pre_tasks:
-      #    - name: Install required Ansible collections/roles from requirements.yml
-      # ansible.builtin.command: ansible-galaxy install -r requirements.yml
-      # delegate_to: localhost
-      #run_once: true
+  tasks:
+    - name: Include hardening tasks from role
+      include_role:
+        name: hardening
+        tasks_from: main
+      tags: ['hardening', 'apply']
 
-  roles:
-    - hardening
+    - name: Include report tasks from role
+      include_role:
+        name: hardening
+        tasks_from: report
+      tags: ['report', 'audit']

@@ -1,89 +1,165 @@
-================================================================================
-                    NX-OS SECURITY HARDENING REPORT
-================================================================================
-Generated: {{ report_timestamp }}
-Device: {{ target_hostname }}
-Datacenter:  {{ datacenter_name }}
-Location: {{ location_name }}
-Source Interface: {{ source_interface }}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NX-OS Security Hardening Report - {{ hostname }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #0066cc; }
+        h2 { color: #004080; border-bottom: 2px solid #004080; padding-bottom: 5px; }
+        .section { margin-bottom: 30px; }
+        .pass { color: green; font-weight: bold; }
+        .fail { color: red; font-weight: bold; }
+        .warning { color: orange; font-weight: bold; }
+        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #004080; color: white; }
+        pre { background-color: #f4f4f4; padding: 10px; border-left: 3px solid #004080; overflow-x: auto; }
+        .info-box { background-color: #e6f2ff; padding: 10px; border-radius: 5px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1>NX-OS Security Hardening Report</h1>
+    
+    <div class="info-box">
+        <strong>Device:</strong> {{ hostname }}<br>
+        <strong>Model:</strong> {{ device_info.ansible_facts.ansible_net_model }}<br>
+        <strong>Version:</strong> {{ device_info.ansible_facts.ansible_net_version }}<br>
+        <strong>Serial Number:</strong> {{ device_info.ansible_facts.ansible_net_serialnum }}<br>
+        <strong>Report Generated:</strong> {{ timestamp }}<br>
+    </div>
 
-================================================================================
-CONFIGURATION APPLIED
-================================================================================
+    <div class="section">
+        <h2>Management Plane Security</h2>
+        
+        <h3>Password Strength Checking</h3>
+        <pre>{{ password_config.stdout[0] }}</pre>
+        {% if 'password strength-check' in password_config.stdout[0] %}
+        <p class="pass">✓ Password strength checking is enabled</p>
+        {% else %}
+        <p class="fail">✗ Password strength checking may not be enabled</p>
+        {% endif %}
 
-1. BASE CONFIGURATION
-   - Hostname: {{ target_hostname }}
-   - Network QoS: Jumbo frames (9216 MTU)
-   - Features enabled: LACP, VPC, LLDP
-   - CoPP Profile: Strict
-   - SSH Security: Login grace time 90s, RSA 2048-bit keys
-   - Domain: hcloud.healthgrp.com.sg
+        <h3>SSH Configuration</h3>
+        <pre>{{ ssh_status.stdout[0] }}</pre>
+        {% if 'enabled' in ssh_status.stdout[2] %}
+        <p class="pass">✓ SSH is enabled</p>
+        {% else %}
+        <p class="fail">✗ SSH is not enabled</p>
+        {% endif %}
+        
+        {% if 'enabled' in ssh_status.stdout[3] %}
+        <p class="fail">✗ Telnet is enabled (should be disabled)</p>
+        {% else %}
+        <p class="pass">✓ Telnet is disabled</p>
+        {% endif %}
 
-2. AAA CONFIGURATION
-   - RADIUS Servers:
-{% for server in radius_servers %}
-     * {{ server }}
-{% endfor %}
-   - AAA Group: HC_NPS_Server
-   - Authentication: RADIUS with local fallback
-   - Accounting: Enabled
+        <h3>AAA Configuration</h3>
+        <pre>{{ aaa_config.stdout[0] }}</pre>
+        {% if 'aaa authentication' in aaa_config.stdout[0] %}
+        <p class="pass">✓ AAA authentication is configured</p>
+        {% else %}
+        <p class="warning">⚠ AAA authentication may not be fully configured</p>
+        {% endif %}
 
-3. ACCESS CONTROL LISTS
-   - VTY Access ACL: {{ vty_access_ips | length }} IPs authorized
-   - eG Poll ACL: {{ eg_poll_ips | length }} IPs configured
-   - eG Trap ACL: {{ eg_trap_ips | length }} IPs configured
-   - ELK ACLs: Configured
-   - SNOW ACLs: Configured
-   - JIRA CMDB ACL: {{ jira_cmdb_ip }}
-   - CSPC ACL: {{ cspc_acl_ip }}
+        <h3>SNMP Configuration</h3>
+        <pre>{{ snmp_config.stdout[0] }}</pre>
+        {% if 'snmp-server user' in snmp_config.stdout[0] %}
+        <p class="pass">✓ SNMPv3 users are configured</p>
+        {% else %}
+        <p class="warning">⚠ Review SNMP configuration for security</p>
+        {% endif %}
 
-4. SNMP CONFIGURATION
-   - Location: {{ location_name }}
-   - Common Users: egtrapsuser, elktrapsuser, JiraCMDBv3_User
-   - Trap Hosts: {{ snmp_trap_hosts | length }} configured
-   - Global Enforce Privacy: Enabled
+        <h3>Logging Configuration</h3>
+        <pre>{{ logging_config.stdout[0] }}</pre>
+        {% if 'logging server' in logging_config.stdout[0] %}
+        <p class="pass">✓ Remote logging is configured</p>
+        {% else %}
+        <p class="warning">⚠ Remote logging server not configured</p>
+        {% endif %}
+    </div>
 
-5. NTP CONFIGURATION
-   - NTP Servers:
-{% for server in ntp_servers %}
-     * {{ server.ip }} (Key: {{ server.key }})
-{% endfor %}
-   - Authentication: Enabled
-   - Source Interface: {{ source_interface }}
+    <div class="section">
+        <h2>Control Plane Security</h2>
+        
+        <h3>Control Plane Policing (CoPP)</h3>
+        <pre>{{ copp_status.stdout[0] }}</pre>
+        {% if 'active' in copp_status.stdout[0]|lower %}
+        <p class="pass">✓ CoPP is active</p>
+        {% else %}
+        <p class="fail">✗ CoPP may not be active</p>
+        {% endif %}
 
-6. VTY CONFIGURATION
-   - Console timeout: 5 minutes
-   - VTY timeout: 5 minutes
-   - Session limit: 5
-   - Access restricted by ACL
+        <h3>NTP Configuration</h3>
+        <pre>{{ ntp_config.stdout[0] }}</pre>
+        {% if 'ntp server' in ntp_config.stdout[0] %}
+        <p class="pass">✓ NTP servers are configured</p>
+        {% else %}
+        <p class="warning">⚠ NTP servers not configured</p>
+        {% endif %}
+    </div>
 
-7. LOGGING CONFIGURATION
-   - Syslog Servers:
-{% for server in syslog_servers %}
-     * {{ server.ip }}:{{ server.port }} (Level {{ server.level }})
-{% endfor %}
-   - Log file: messages level 6, size 51200
-   - Timestamps: Milliseconds
-   - Console/Monitor logging: Disabled
+    <div class="section">
+        <h2>Data Plane Security</h2>
+        
+        <h3>Access Control Lists</h3>
+        <pre>{{ acl_config.stdout[0] }}</pre>
+        {% if acl_config.stdout[0]|length > 100 %}
+        <p class="pass">✓ ACLs are configured</p>
+        {% else %}
+        <p class="warning">⚠ Limited or no ACLs configured</p>
+        {% endif %}
 
-================================================================================
-COMPLIANCE STATUS
-================================================================================
-[✓] Password strength checking enabled
-[✓] SSH security hardened
-[✓] Domain configuration applied
-[✓] Banner configured
-[✓] CoPP profile strict enabled
-[✓] AAA authentication configured
-[✓] RADIUS servers configured
-[✓] ACLs applied
-[✓] SNMP v3 with encryption
-[✓] NTP with authentication
-[✓] Logging configured
-[✓] VTY restrictions applied
+    </div>
 
-================================================================================
-================================================================================
-================================================================================
-END OF REPORT
-================================================================================
+    <div class="section">
+        <h2>User Access and Authentication</h2>
+        
+        <h3>User Accounts</h3>
+        <pre>{{ user_accounts.stdout[0] }}</pre>
+
+        <h3>VTY Configuration</h3>
+        <pre>{{ vty_config.stdout[1] }}</pre>
+    </div>
+
+    <div class="section">
+        <h2>Additional Security Checks</h2>
+        
+        <h3>Banner Configuration</h3>
+        <pre>{{ banner_config.stdout[0] if banner_config.stdout is defined else 'No banner configured' }}</pre>
+        {% if banner_config.stdout is defined and banner_config.stdout[0]|length > 10 %}
+        <p class="pass">✓ Login banner is configured</p>
+        {% else %}
+        <p class="warning">⚠ Login banner not configured</p>
+        {% endif %}
+
+        <h3>CDP/LLDP Status</h3>
+        <pre>{{ disabled_services.stdout[1] if disabled_services.stdout is defined else 'N/A' }}</pre>
+
+    </div>
+
+    <div class="section">
+        <h2>Recommendations</h2>
+        <ul>
+            <li>Ensure SSH is enabled and Telnet is disabled for secure management access</li>
+            <li>Configure AAA with TACACS+ or RADIUS for centralized authentication</li>
+            <li>Implement infrastructure ACLs (iACLs) to protect management plane</li>
+            <li>Enable Control Plane Policing (CoPP) to protect against DoS attacks</li>
+            <li>Configure remote syslog server with TLS encryption</li>
+            <li>Use SNMPv3 with authentication and encryption</li>
+            <li>Configure login banners for legal compliance</li>
+            <li>Disable unnecessary services like CDP/LLDP on untrusted interfaces</li>
+            <li>Review and disable Guest Shell if not required</li>
+            <li>Configure NTP for accurate time synchronization</li>
+            <li>Implement port security and DHCP snooping on access ports</li>
+            <li>Enable password strength checking and enforce strong passwords</li>
+            <li>Configure exec-timeout values on VTY lines</li>
+            <li>Review user accounts and remove unused accounts</li>
+        </ul>
+    </div>
+
+    <footer style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #ccc; font-size: 0.9em; color: #666;">
+        Report based on Cisco NX-OS Software Hardening Guide<br>
+        Reference: <a href="https://sec.cloudapps.cisco.com/security/center/resources/securing_nx_os.html">Cisco NX-OS Hardening Guide</a>
+    </footer>
+</body>
+</html>

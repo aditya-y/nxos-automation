@@ -10,7 +10,7 @@ aaa group server radius HC_NPS_Server
 !
 crypto key generate rsa mod 2048
 
-###### added local as the first authentication before radius ##########
+{# added local as the first authentication before radius #}
 aaa authentication login default local
 #aaa authentication login default local group HC_NPS_Server
 aaa accounting default group HC_NPS_Server
