@@ -111,3 +111,16 @@
     hostname: "{{ inventory_hostname }}"
     device_info: "{{ device_facts }}"
     timestamp: "{{ report_timestamp }}"
+
+- name: Send email via Gmail
+  community.general.mail:
+    host: smtp.gmail.com
+    port: 587
+    username: "adityayadav7045@gmail.com"
+    password: "{{ gmail_password }}"
+    to:
+      - yadavaditya.sg@gmail.com
+    subject: "NX-OS Hardening Report"
+    attach: "./{{ inventory_hostname }}hardening_report{{ report_timestamp }}.html"
+    secure: starttls
+  delegate_to: localhost
