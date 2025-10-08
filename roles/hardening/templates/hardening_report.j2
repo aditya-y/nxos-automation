@@ -25,7 +25,7 @@
         <strong>Model:</strong> {{ device_info.ansible_facts.ansible_net_model }}<br>
         <strong>Version:</strong> {{ device_info.ansible_facts.ansible_net_version }}<br>
         <strong>Serial Number:</strong> {{ device_info.ansible_facts.ansible_net_serialnum }}<br>
-        <strong>Report Generated:</strong> {{ timestamp }}<br>
+        <strong>Report Generated:</strong> {{ report_timestamp }}<br>
     </div>
 
     <div class="section">
@@ -162,4 +162,5 @@
         Reference: <a href="https://sec.cloudapps.cisco.com/security/center/resources/securing_nx_os.html">Cisco NX-OS Hardening Guide</a>
     </footer>
 </body>
+
 </html>
