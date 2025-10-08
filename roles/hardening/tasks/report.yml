@@ -107,10 +107,6 @@
   template:
     src: hardening_report.j2
     dest: "/tmp/{{ inventory_hostname }}hardening_report{{ report_timestamp }}.html"
-  vars:
-    hostname: "{{ inventory_hostname }}"
-    device_info: "{{ device_facts }}"
-    timestamp: "{{ report_timestamp }}"
   delegate_to: localhost
 
 - name: Send email via Gmail
@@ -125,4 +121,5 @@
     attach: "/tmp/{{ inventory_hostname }}hardening_report{{ report_timestamp }}.html"
     secure: starttls
   delegate_to: localhost
+
 
