@@ -7,6 +7,9 @@
 
   tasks:
     - name: Include hardening tasks from role
+      set_fact:
+        report_timestamp: "{{ now(fmt='%Y%m%d_%H%M%S') }}"
+    - name: Include hardening tasks from role
       include_role:
         name: hardening
         tasks_from: main
