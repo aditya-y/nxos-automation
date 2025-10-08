@@ -14,7 +14,7 @@
 - name: Check password strength settings
   cisco.nxos.nxos_command:
     commands:
-      - show running-config | include password
+      - show password strength-check
   register: password_config
 
 - name: Check AAA configuration
@@ -123,6 +123,7 @@
     attach: "/tmp/{{ inventory_hostname }}hardening_report{{ report_timestamp }}.html"
     secure: starttls
   delegate_to: localhost
+
 
 
 
