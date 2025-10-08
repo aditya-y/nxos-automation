@@ -59,10 +59,10 @@
     src: "logging_config.j2"
   register: logging_config_result
 
-- name: Save Configuration
-  cisco.nxos.nxos_config:
-    save_when: modified
-  register: save_result
+# - name: Save Configuration
+#   cisco.nxos.nxos_config:
+#     save_when: modified
+#   register: save_result
 
 - name: Set Execution Summary
   set_fact:
@@ -74,6 +74,7 @@
       ntp_config: "{{ 'Applied' if ntp_config_result.changed else 'No changes' }}"
       vty_config: "{{ 'Applied' if vty_config_result.changed else 'No changes' }}"
       logging_config: "{{ 'Applied' if logging_config_result.changed else 'No changes' }}"
-      config_saved: "{{ 'Yes' if save_result.changed else 'Already saved' }}"
+#      config_saved: "{{ 'Yes' if save_result.changed else 'Already saved' }}"
+
 
 
