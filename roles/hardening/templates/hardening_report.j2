@@ -83,7 +83,7 @@
         
         <h3>Control Plane Policing (CoPP)</h3>
         <pre>{{ copp_status.stdout[0] }}</pre>
-        {% if 'active' in copp_status.stdout[0]|lower %}
+        {% if 'copp-system-p-policy-strict' in copp_status.stdout[0]|lower %}
         <p class="pass">✓ CoPP is active</p>
         {% else %}
         <p class="fail">✗ CoPP may not be active</p>
@@ -164,3 +164,4 @@
 </body>
 
 </html>
+
