@@ -9,6 +9,7 @@
     lines:
       - ssh login-gracetime 90
       - password strength-check
+    save_when: modified
   
 - name: Regenerate SSH keys only (without disabling SSH)
   cisco.nxos.nxos_command:
@@ -74,4 +75,5 @@
       vty_config: "{{ 'Applied' if vty_config_result.changed else 'No changes' }}"
       logging_config: "{{ 'Applied' if logging_config_result.changed else 'No changes' }}"
       config_saved: "{{ 'Yes' if save_result.changed else 'Already saved' }}"
+
 
