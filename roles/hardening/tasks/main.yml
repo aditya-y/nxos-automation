@@ -4,6 +4,20 @@
     src: "base_config.j2"
   register: base_config_result
 
+- name: Configure SSH settings without disconnection
+  cisco.nxos.nxos_config:
+    lines:
+      - ssh login-gracetime 90
+      - password strength-check
+  
+- name: Regenerate SSH keys only (without disabling SSH)
+  cisco.nxos.nxos_command:
+    commands:
+      - configure terminal
+      - no ssh key rsa
+      - ssh key rsa 2048
+      - end
+
 - name: Apply Motd Configuration
   cisco.nxos.nxos_banner:
     banner: motd
@@ -60,3 +74,4 @@
       vty_config: "{{ 'Applied' if vty_config_result.changed else 'No changes' }}"
       logging_config: "{{ 'Applied' if logging_config_result.changed else 'No changes' }}"
       config_saved: "{{ 'Yes' if save_result.changed else 'Already saved' }}"
+
