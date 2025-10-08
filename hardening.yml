@@ -11,7 +11,7 @@
         name: hardening
         tasks_from: main
       tags: ['hardening', 'apply']
-      when: mode is defined and mode == hardening
+      when: mode == hardening
 
     - name: Include report tasks from role
       include_role:
