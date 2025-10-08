@@ -1,0 +1,20 @@
+---
+- name: NX-OS Security Hardening Orchestrator
+  hosts: "{{ hosts }}"
+  gather_facts: no
+  vars:
+    report_timestamp: "{{ now(fmt='%Y%m%d_%H%M%S') }}"
+
+  tasks:
+    - name: Include hardening tasks from role
+      include_role:
+        name: hardening
+        tasks_from: main
+      tags: ['hardening', 'apply']
+      when: mode is defined and mode == hardening
+
+    - name: Include report tasks from role
+      include_role:
+        name: hardening
+        tasks_from: report
+      tags: ['report', 'audit']
