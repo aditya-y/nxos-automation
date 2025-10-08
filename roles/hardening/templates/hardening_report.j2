@@ -33,7 +33,7 @@
         
         <h3>Password Strength Checking</h3>
         <pre>{{ password_config.stdout[0] }}</pre>
-        {% if 'password strength-check' in password_config.stdout[0] %}
+        {% if 'enable' in password_config.stdout[0] %}
         <p class="pass">✓ Password strength checking is enabled</p>
         {% else %}
         <p class="fail">✗ Password strength checking may not be enabled</p>
@@ -164,4 +164,5 @@
 </body>
 
 </html>
+
 
