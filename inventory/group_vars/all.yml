@@ -1,5 +1,6 @@
 ---
 # SNMP Configuration
+mode: "{{ mode }}"
 source_interface: "mgmt0"
 snmp_contact: "IHIS NETWORK SERVICES"
 snmp_auth_protocol: "sha"
@@ -94,3 +95,4 @@ default_snmp_traps:
   - "stpx inconsistency"
   - "stpx root-inconsistency"
   - "stpx loop-inconsistency"
+
