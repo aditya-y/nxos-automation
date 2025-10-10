@@ -96,10 +96,8 @@
 - name: Check disabled services
   cisco.nxos.nxos_command:
     commands:
-      - show feature | include disabled
-      - show cdp
-      - show lldp
-  register: disabled_services
+      - show feature | include enable
+  register: enabled_services
   ignore_errors: yes
 
 - name: Generate hardening report
