@@ -106,12 +106,13 @@
   delegate_to: localhost
   template:
     src: hardening_report.j2
-    dest: "/tmp/{{ inventory_hostname }}hardening_report{{ report_timestamp }}.html"
+    dest: "{{ inventory_hostname }}_hardening_report{{ report_timestamp }}.html"
   vars:
     hostname: "{{ inventory_hostname }}"
     device_info: "{{ device_facts }}"
 
 - name: Send email via Gmail
+  delegate_to: localhost
   community.general.mail:
     host: smtp.gmail.com
     port: 587
@@ -120,7 +121,7 @@
     to:
       - yadavaditya.sg@gmail.com
     subject: "NX-OS Hardening Report"
-    attach: "/tmp/{{ inventory_hostname }}hardening_report{{ report_timestamp }}.html"
+    attach: "{{ inventory_hostname }}_hardening_report{{ report_timestamp }}.html"
     secure: starttls
   delegate_to: localhost
 

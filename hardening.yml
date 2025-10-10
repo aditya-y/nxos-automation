@@ -2,22 +2,57 @@
 - name: NX-OS Security Hardening Orchestrator
   hosts: "{{ hosts }}"
   gather_facts: no
-  vars:
-    report_timestamp: "{{ now(fmt='%Y%m%d_%H%M%S') }}"
 
   tasks:
-    - name: Include hardening tasks from role
-      set_fact:
-        report_timestamp: "{{ now(fmt='%Y%m%d_%H%M%S') }}"
-    - name: Include hardening tasks from role
-      include_role:
-        name: hardening
-        tasks_from: main
-      tags: ['hardening', 'apply']
-      when: mode == "hardening"
+    - block:
+        - name: Include hardening tasks from role
+          set_fact:
+            report_timestamp: "{{ now(fmt='%Y%m%d_%H%M%S') }}"
+        - name: Include hardening tasks from role
+          include_role:
+            name: hardening
+            tasks_from: main
+          tags: ['hardening', 'apply']
+          when: mode == "hardening"
 
-    - name: Include report tasks from role
-      include_role:
-        name: hardening
-        tasks_from: report
-      tags: ['report', 'audit']
+        - name: Include report tasks from role
+          include_role:
+            name: hardening
+            tasks_from: report
+          tags: ['report', 'audit']
+
+      rescue:        
+        - name: Capture concise error
+          set_fact:
+            full_msg: "{{ ansible_failed_result.msg | default('Task failed') }}"
+            failed_task_name: "{{ ansible_failed_task.name }}"
+          run_once: true
+          delegate_to: localhost
+
+        - name: Extract until first period
+          set_fact:
+            failure_message: "{{ full_msg.split('.')[0] + '.' }}"
+          run_once: true
+          delegate_to: localhost
+
+        - name: Send Email with attachment
+          delegate_to: localhost
+          mail:
+            host: smtp.gmail.com
+            port: 587
+            username: "adityayadav7045@gmail.com"
+            password: "{{ gmail_password }}"
+            to:
+              - yadavaditya.sg@gmail.com
+            subject: "Cisco NXOS Hardening Failed"
+            body: |
+              <hr>
+              <p>The Ansible job has been Failed.</p>
+              <p>Failuer Message: {{ failure_message }}.</p>
+              <ul>
+                <li><strong>Job ID:</strong> <a href="https://aap.hcc.com.sg/#/jobs/playbook/{{ awx_job_id }}/output"><b>{{ awx_job_id }}</b></a> </li>
+              </ul>
+            subtype: html
+            charset: utf8
+        
+      
