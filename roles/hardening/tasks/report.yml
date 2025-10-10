@@ -112,7 +112,6 @@
     device_info: "{{ device_facts }}"
 
 - name: Send email via Gmail
-  delegate_to: localhost
   community.general.mail:
     host: smtp.gmail.com
     port: 587
@@ -120,7 +119,7 @@
     password: "{{ gmail_password }}"
     to:
       - yadavaditya.sg@gmail.com
-    subject: "NX-OS Hardening Report"
+    subject: "NX-OS Hardening Report for {{ hosts }}"
     attach: "{{ inventory_hostname }}_hardening_report{{ report_timestamp }}.html"
     secure: starttls
   delegate_to: localhost

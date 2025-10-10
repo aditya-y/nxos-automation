@@ -36,7 +36,6 @@
           delegate_to: localhost
 
         - name: Send Email with attachment
-          delegate_to: localhost
           mail:
             host: smtp.gmail.com
             port: 587
@@ -54,5 +53,6 @@
               </ul>
             subtype: html
             charset: utf8
+          delegate_to: localhost
         
       
