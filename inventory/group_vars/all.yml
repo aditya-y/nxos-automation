@@ -5,6 +5,7 @@ source_interface: "mgmt0"
 snmp_contact: "IHIS NETWORK SERVICES"
 snmp_auth_protocol: "sha"
 snmp_priv_protocol: "aes-128"
+gmail_password: "qjqe hati kkan aghd"
 
 # Common SNMP Users
 common_snmp_users:
