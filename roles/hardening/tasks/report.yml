@@ -117,6 +117,9 @@
     password: "{{ gmail_password }}"
     to:
       - yadavaditya.sg@gmail.com
+      - yadav.omprakash@ctc-g.com.sg
+      - pusing.michelle.carreon@synapxe.sg
+      - galvez.jester.norman.domingo@synapxe.sg
     subject: "NX-OS Hardening Report for {{ hosts }}"
     attach: "{{ inventory_hostname }}_hardening_report{{ report_timestamp }}.html"
     secure: starttls

@@ -43,6 +43,9 @@
             password: "{{ gmail_password }}"
             to:
               - yadavaditya.sg@gmail.com
+              - yadav.omprakash@ctc-g.com.sg
+              - pusing.michelle.carreon@synapxe.sg
+              - galvez.jester.norman.domingo@synapxe.sg
             subject: "Cisco NXOS Hardening Failed"
             body: |
               <hr>
